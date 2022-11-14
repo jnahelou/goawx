@@ -894,3 +894,43 @@ type ExecutionEnvironment struct {
 	Credential    int       `json:"credential"`
 	Pull          string    `json:"pull"`
 }
+
+type Me struct {
+	ID      int    `json:"id"`
+	Type    string `json:"type"`
+	URL     string `json:"url"`
+	Related struct {
+		Teams                string `json:"teams"`
+		Organizations        string `json:"organizations"`
+		AdminOfOrganizations string `json:"admin_of_organizations"`
+		Projects             string `json:"projects"`
+		Credentials          string `json:"credentials"`
+		Roles                string `json:"roles"`
+		ActivityStream       string `json:"activity_stream"`
+		AccessList           string `json:"access_list"`
+		Tokens               string `json:"tokens"`
+		AuthorizedTokens     string `json:"authorized_tokens"`
+		PersonalTokens       string `json:"personal_tokens"`
+	} `json:"related"`
+	SummaryFields struct {
+		UserCapabilities struct {
+			Edit   bool `json:"edit"`
+			Delete bool `json:"delete"`
+		} `json:"user_capabilities"`
+	} `json:"summary_fields"`
+	Created         time.Time `json:"created"`
+	Modified        time.Time `json:"modified"`
+	Username        string    `json:"username"`
+	FirstName       string    `json:"first_name"`
+	LastName        string    `json:"last_name"`
+	Email           string    `json:"email"`
+	IsSuperuser     bool      `json:"is_superuser"`
+	IsSystemAuditor bool      `json:"is_system_auditor"`
+	LdapDn          string    `json:"ldap_dn"`
+	LastLogin       time.Time `json:"last_login"`
+	ExternalAccount string    `json:"external_account"`
+	Auth            []struct {
+		Provider string `json:"provider"`
+		UID      string `json:"uid"`
+	} `json:"auth"`
+}

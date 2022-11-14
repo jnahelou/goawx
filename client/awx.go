@@ -31,6 +31,7 @@ type AWX struct {
 	InventorySourcesService                         *InventorySourcesService
 	InventoryGroupService                           *InventoryGroupService
 	InstanceGroupsService                           *InstanceGroupsService
+	MeService                                       *MeService
 	NotificationTemplatesService                    *NotificationTemplatesService
 	OrganizationsService                            *OrganizationsService
 	ScheduleService                                 *SchedulesService
@@ -74,6 +75,19 @@ func ValidateParams(data map[string]interface{}, mandatoryFields []string) (notf
 	return notfound, status
 }
 
+func validateCredentials(c *AWX) error {
+	// test the connection and return and error if there's an issue
+	_, err := c.PingService.Ping()
+	if err != nil {
+		return err
+	}
+
+	// ensure credentials are accepted
+	_, _, err = c.MeService.Me()
+
+	return err
+}
+
 // NewAWX news an awx handler with basic auth support, you could customize the http
 // transport by passing custom client.
 func NewAWX(baseURL, userName, passwd string, client *http.Client) (*AWX, error) {
@@ -87,15 +101,9 @@ func NewAWX(baseURL, userName, passwd string, client *http.Client) (*AWX, error)
 		Requester: r,
 	}
 
-	newAWX := newAWX(awxClient)
+	c := newAWX(awxClient)
 
-	// test the connection and return and error if there's an issue
-	_, err := newAWX.PingService.Ping()
-	if err != nil {
-		return nil, err
-	}
-
-	return newAWX, nil
+	return c, validateCredentials(c)
 }
 
 // NewAWXToken creates an AWX handler with token support.
@@ -110,15 +118,9 @@ func NewAWXToken(baseURL, token string, client *http.Client) (*AWX, error) {
 		Requester: r,
 	}
 
-	newAWX := newAWX(awxClient)
+	c := newAWX(awxClient)
 
-	// test the connection and return and error if there's an issue
-	_, err := newAWX.PingService.Ping()
-	if err != nil {
-		return nil, err
-	}
-
-	return newAWX, nil
+	return c, validateCredentials(c)
 }
 
 func newAWX(c *Client) *AWX {
@@ -177,6 +179,9 @@ func newAWX(c *Client) *AWX {
 			client: c,
 		},
 		InstanceGroupsService: &InstanceGroupsService{
+			client: c,
+		},
+		MeService: &MeService{
 			client: c,
 		},
 		NotificationTemplatesService: &NotificationTemplatesService{
